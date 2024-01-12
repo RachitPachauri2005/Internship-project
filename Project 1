@@ -1,0 +1,61 @@
+# Import necessary libraries
+import random
+from flask import Flask, request, jsonify, send_file
+from pydub import AudioSegment
+
+app = Flask(__name__)
+
+class MusicGenerator:
+    def __init__(self):
+        self.genres = ["Progressive house", "Psychedelic techno", "Deep house"]
+        self.notes = ["C", "D", "E", "F", "G", "A", "B"]
+
+    def generate_music(self, user_energy, user_genre, user_tempo, user_duration):
+        # Placeholder logic for music generation
+        # Replace this with your actual AI model or API calls
+
+        # For simplicity, generating a random sequence of notes
+        music_sequence = [random.choice(self.notes) for _ in range(int(user_duration * user_tempo))]
+
+        # Display generated music details
+        print(f"Generated Music - Genre: {user_genre}, Energy: {user_energy}, Tempo: {user_tempo}, Duration: {user_duration} minutes")
+        print("Music Sequence:", music_sequence)
+
+        # Convert music to AudioSegment (replace this with actual audio generation logic)
+        audio = AudioSegment.silent(duration=user_duration * 60 * 1000)  # in milliseconds
+
+        # Save the generated music
+        audio.export("generated_music.mp3", format="mp3")
+
+    def avoid_repetitive_structures(self, generated_music):
+        # Placeholder logic for avoiding repetitive structures
+        # Implement the algorithm mentioned in the approach document
+        pass
+
+# Instantiate MusicGenerator
+music_generator = MusicGenerator()
+
+@app.route('/generate_music', methods=['POST'])
+def generate_music_endpoint():
+    user_preferences = request.get_json()
+
+    user_energy = user_preferences['energy']
+    user_genre = user_preferences['genre']
+    user_tempo = user_preferences['tempo']
+    user_duration = user_preferences['duration']
+
+    # Generate music based on user preferences
+    music_generator.generate_music(user_energy, user_genre, user_tempo, user_duration)
+
+    # Avoid repetitive structures
+    music_generator.avoid_repetitive_structures("generated_music.mp3")
+
+    return jsonify({"message": "Music generated successfully!"})
+
+@app.route('/download_music', methods=['GET'])
+def download_music_endpoint():
+    # Provide download link to the generated music
+    return send_file("generated_music.mp3", as_attachment=True)
+
+if __name__ == '__main__':
+    app.run(debug=True)
